@@ -63,7 +63,6 @@ export default {
     },
     watch: {
         show: function (newShow, oldShow) {
-            console.log(newShow, oldShow)
             if (newShow) {
                 this.myShow = true;
                 this.toHide = false;
@@ -231,52 +230,54 @@ export default {
             if (this.reqId) cancelAnimationFrame(this.reqId);
             
             this.canvas = this.$refs.canvas;
-            this.ctx = this.canvas.getContext("2d");
+            if (this.canvas) {
+                this.ctx = this.canvas.getContext("2d");
 
-            this.canvas.width = window.innerWidth;
-            this.canvas.height = window.innerHeight;
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
 
-            if (this.interaction == true) {
-                var actionFuncName = 'ontouchstart' in document.documentElement ? "touchmove" : "mousemove";
-                this.canvas.addEventListener(actionFuncName, (e) => {
-                    if (actionFuncName == "touchmove") {
-                        this.mX = e.touches[0].clientX;
-                        this.mY = e.touches[0].clientY;
-                    } else {
-                        this.mX = e.clientX;
-                        this.mY = e.clientY;
-                    }
-                });
+                if (this.interaction == true) {
+                    var actionFuncName = 'ontouchstart' in document.documentElement ? "touchmove" : "mousemove";
+                    this.canvas.addEventListener(actionFuncName, (e) => {
+                        if (actionFuncName == "touchmove") {
+                            this.mX = e.touches[0].clientX;
+                            this.mY = e.touches[0].clientY;
+                        } else {
+                            this.mX = e.clientX;
+                            this.mY = e.clientY;
+                        }
+                    });
+                }
+
+                for (var i = 0; i < this.flakeCount; i++) {
+                    var x = Math.floor(Math.random() * this.canvas.width),
+                        y = Math.floor(Math.random() * this.canvas.height),
+                        size = (Math.random() * 3)  + this.size,
+                        speed = (Math.random() * 1) + this.speed,
+                        opacity = (Math.random() * 0.5) + this.opacity;
+
+                    this.flakes.push({
+                        speed: speed,
+                        velY: speed,
+                        velX: 0,
+                        x: x,
+                        y: y,
+                        size: size,
+                        stepSize: (Math.random()) / 30,
+                        step: 0,
+                        angle: 180,
+                        opacity: opacity
+                    });
+                }
+
+                var imageList = document.querySelectorAll(".lis_flake");
+                for(i=0; i < imageList.length; i++) {
+                    this.imageItems.push(imageList[i]);
+                }
+                this.imageNum = imageList.length;
+
+                this.snow();            
             }
-
-            for (var i = 0; i < this.flakeCount; i++) {
-                var x = Math.floor(Math.random() * this.canvas.width),
-                    y = Math.floor(Math.random() * this.canvas.height),
-                    size = (Math.random() * 3)  + this.size,
-                    speed = (Math.random() * 1) + this.speed,
-                    opacity = (Math.random() * 0.5) + this.opacity;
-
-                this.flakes.push({
-                    speed: speed,
-                    velY: speed,
-                    velX: 0,
-                    x: x,
-                    y: y,
-                    size: size,
-                    stepSize: (Math.random()) / 30,
-                    step: 0,
-                    angle: 180,
-                    opacity: opacity
-                });
-            }
-
-            var imageList = document.querySelectorAll(".lis_flake");
-            for(i=0; i < imageList.length; i++) {
-                this.imageItems.push(imageList[i]);
-            }
-            this.imageNum = imageList.length;
-
-            this.snow();            
         }
     }
 
